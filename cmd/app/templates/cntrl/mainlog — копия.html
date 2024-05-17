@@ -1,0 +1,52 @@
+{{define "mainlog"}}
+<!script>
+const form = document.querySelector("form")
+const submitButton = document.querySelector("button")
+
+if (form) {
+    form.addEventListener("submit", handleFormSubmit)
+}
+
+async function handleFormSubmit(event) {
+// Отключаем дефолтное поведение
+event.preventDefault()
+disableButton()
+
+try {
+    showLoader()
+    const response = await fetch("/cntrl", {
+        method: "POST",
+        body: new FormData(form)
+    })
+    const result = await response.json()
+} catch (error) {
+    showError(error)
+} finally {
+    hideLoader()
+    enableButton()
+}
+}
+
+function disableButton() {
+if (submitButton) submitButton.disabled = true
+}
+
+function enableButton() {
+if (submitButton) submitButton.disabled = false
+}
+
+function showLoader() {
+// Показываем пользователю лоадер
+}
+
+function hideLoader() {
+// Скрываем лоадер от пользователя
+}
+
+function showError() {
+// Показываем пользователю ошибку
+}                
+</!script>
+
+
+{{end}}

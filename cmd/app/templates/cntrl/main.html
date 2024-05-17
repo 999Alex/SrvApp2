@@ -1,0 +1,236 @@
+{{ define "main"}}
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Панель управления сервера приложений</title>
+    
+        <meta charset="utf-8" />
+        <title>Панель управления сервера приложений</title>
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+            }
+            body, html{
+                height: 100%;
+                width: 100%;
+                min-width: 800px;
+                font-family: 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+                background-color: #27272a;
+
+            }
+            ::-webkit-scrollbar {
+                background-color: #3c3c3c;
+                width: 10px;
+            }
+            ::-webkit-scrollbar:horizontal{
+                height: 10px;
+            }
+            ::-webkit-scrollbar-thumb {
+                background-color: rgb(245 158 11);
+            }
+            .block_nav input{
+                position: relative;
+                padding: 0.3em;
+                border: 1px solid white;
+                border-radius: 5px;
+            }
+            .mainlog {
+                height: 100%;
+                float: top;
+                clear: both;
+                background: #ccc;
+                border: solid 1px black;
+                text-align: left;
+                overflow: auto;
+                position: relative;
+            }
+            .sessionlist {
+                height: 100%;
+                /* width: 100%; */
+                clear: both;
+                background: #ccc;
+                border: solid 1px black;
+                text-align: left;
+                position: relative;
+                overflow: auto;
+            }
+            .sessionlog {
+                height: 100%;
+                width: 100%;
+                background: #ccc;
+                border: solid 1px black;
+                text-align: left;
+                overflow: hidden;
+                overflow-x: auto;
+                white-space:nowrap;
+            }
+            header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 0 15px;
+                height: 50px;
+                border-bottom: 1px solid #3c3c3c;
+            }
+            header label {
+                font-weight: bold;
+                color: rgb(245 158 11);               
+            }
+            header span {
+                color: white;
+                font-weight: 700;
+                letter-spacing: 0.1em;
+                line-height: 0.9em;
+                font-size: 1.6em;
+            }
+            .header-logo{
+                display: flex;
+                align-items: center;
+                column-gap: 5px;
+            }
+            header p{
+                color: rgb(245 158 11);
+                font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+                letter-spacing: -0.05em;
+                line-height: 0.8em;
+            }
+            header button {
+                cursor: pointer;
+                font-weight: bold;
+                color: white;
+                background-color: #27272a;
+                padding: 5px;
+                border: 1px solid white;
+                border-radius: 5px;               
+            }
+            header button:hover{
+                color: #27272a;
+                background: rgb(255, 255, 255);         
+            }
+            main {
+                display: flex;
+                flex-direction: column;
+                row-gap: 3px;
+                padding: 8px 15px;
+                height: calc(100vh - 70px);
+
+            }
+            .main-top {
+                display: flex;
+                column-gap: 25px;
+                height: 50%;
+            }
+            .block {
+                display: flex;
+                flex-direction: column;
+            }
+            .serverLog-block {
+                width: 40%;
+            }
+            .listOfSessions-block {
+                width: 60%;
+            }
+            .block-header {
+                color: white;
+                align-self: center;
+                margin-bottom: 3px;
+            }
+            .sessionsLog-block {
+                height: 50%;
+            }
+            .logWindow{
+                border: 2px solid rgb(245 158 11);
+                border-radius: 5px;
+            }
+        </style>
+
+        <script>
+            flRefresh=true
+            async function refresh() {
+                if (flRefresh) {
+                let divs_mainlog = document.querySelectorAll('.mainlog')
+                pos=divs_mainlog[0].scrollTop
+                posismax=divs_mainlog[0].scrollTop==divs_mainlog[0].scrollHeight
+                divs_mainlog[0].innerHTML = await( await fetch('/?cmd=mainlog')).text()
+                if (posismax) {
+                    divs_mainlog[0].scrollTop=divs_mainlog[0].scrollHeight
+                } else {
+                    divs_mainlog[0].scrollTop=pos
+                }
+
+                let divs_sessionlist = document.querySelectorAll('.sessionlist')
+                pos=divs_sessionlist[0].scrollTop
+                divs_sessionlist[0].innerHTML = await( await fetch('/?cmd=sessionlist')).text()
+                divs_sessionlist[0].scrollTop=pos
+
+                let divs_sessionlog = document.querySelectorAll('.sessionlog')
+                pos=divs_sessionlog[0].scrollTop
+                divs_sessionlog[0].innerHTML = await( await fetch('/?cmd=sessionlog')).text()
+                divs_sessionlog[0].scrollTop=divs_sessionlog[0].scrollHeight}
+
+            }                
+            async function api_cmd() {
+                let divs_mainlog = document.querySelectorAll('.mainlog')
+                pos=divs_mainlog[0].scrollTop
+                divs_mainlog[0].innerHTML =divs_mainlog[0].innerHTML+ await( await fetch('/api?cmd=ee 2+7')).text()
+                divs_mainlog[0].scrollTop=divs_mainlog[0].scrollHeight
+            }                
+            refresh()
+            setInterval('refresh()', 1000)
+        </script>
+
+    </head>
+
+    <Body>
+        <header>
+            <div class="header-logo">
+                <span>SA<br>CP</span>
+                <p>Server Applications<br>Control Panel</p>
+            </div>
+            
+            <div class="block_nav">
+                <label>
+                    Команда:
+                    <input type="text" name="cmd" >
+                </label>
+                <button onclick = "api_cmd()" type="button">Выполнить</button>
+                <button onclick = "flRefresh=!flRefresh" type="button">Обновление</button>
+            </div>
+        </header>
+        <main>
+            <div class="main-top">
+                <div class="serverLog-block block">
+                    <div class="block-header">
+                        <h4>Журнал сервера</h4>
+                    </div>
+                    <div class="mainlog logWindow">
+
+                    </div>
+                </div>
+                <div class="listOfSessions-block block">
+                    <div class="block-header">
+                        <h4>Список сессий</h4>
+                    </div>
+                    <div class="sessionlist logWindow">
+                        
+                    </div>
+                </div>
+            </div>
+            <div class="sessionsLog-block block">
+                <div class="block-header">
+                    <h4>Журналы сессий</h4>
+                </div>
+                <div class="sessionlog logWindow">
+
+                </div>
+            </div>
+        </main>
+    </Body>
+</html>
+
+
+{{ end }}

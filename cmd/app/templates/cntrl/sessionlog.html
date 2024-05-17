@@ -1,0 +1,32 @@
+{{ define "sessionlog" }}
+
+<table border="1" height="100%" >
+    <Tr>
+       {{ range $k1, $Ses:=.Sessions}}
+       <td style="float:vertical-align" width="300px" >
+            <table border="0" >
+                <tr>
+                    <td>[{{$Ses.Id}}] </td><td width="100%"> {{$Ses.Name}}</td>
+                </tr>
+            </table >
+            <table width="300px" style="border-top: 1px solid;border-spacing: 0;">
+                <tr>
+                    <td width="100%">
+                        <div style="overflow: auto; width: 300px; height: calc((100vh - 200px) / 2);">
+                            {{ $log:=index $.Logs $Ses.LogI }} 
+
+                            {{ range $log.Log }}
+                            {{ . }}<BR>
+                            {{ end }}
+
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </td>
+        {{ end }}
+    </Tr>
+
+</table>
+
+{{ end }}

@@ -1,0 +1,37 @@
+﻿{{define "sessionlist"}}
+
+<table width="100%" border="1">
+    <Tr height="50px">
+        <td width="30">Управление</td><td width="30">Ид</td><td width="150">Наименование</td><td width="150">Пользователь</td><td width="70">Сеть</td><td width="70">Прил.</td><td width="150">Время создания</td>
+    </Tr>
+    {{range .}}
+    <Tr height="30px">
+        <td>
+            <button type="button" onclick="fetch('/cntrl?cmd=session_close&id={{.Id}}')">X</button>
+            <button type="button" onclick="fetch('/cntrl?cmd=session_nop&id={{.Id}}')">O</button>
+        </td> 
+        <td> 
+            {{.Id}}<BR>
+        </td>
+        <td> 
+            {{.Name}}<BR>
+        </td>
+        <td> 
+            {{.UserName}}<BR>
+        </td>
+        <td> 
+            {{.TimeNet}}<BR>
+        </td>
+        <td> 
+            {{.TimeApp}}<BR>
+        </td>
+        <td> 
+            {{.TimeCreate}}<BR>
+        </td>
+
+    </Tr>
+    {{end}}
+</table>
+
+
+{{end}}
