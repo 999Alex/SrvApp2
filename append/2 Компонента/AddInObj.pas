@@ -109,6 +109,7 @@ TAddInObject = class (TComObjectP, IDispatch, IInitDone, ISpecifyPropertyPages,
 
     function meth_Quit(paParams: PSafeArray; var ARet:OLEVariant): HResult; stdcall;
     function meth_Open(paParams: PSafeArray; var ARet:OLEVariant): HResult; stdcall;
+    function meth_UpdActive(paParams: PSafeArray; var ARet:OLEVariant): HResult; stdcall;
     function meth_Enable(paParams: PSafeArray; var ARet:OLEVariant): HResult; stdcall;
     function meth_Disable(paParams: PSafeArray; var ARet:OLEVariant): HResult; stdcall;
 
@@ -1288,6 +1289,12 @@ function TAddInObject.meth_Quit(paParams: PSafeArray; var ARet: OleVariant): HRe
 begin
   F1C:=unassigned;
   meth_Quit := S_OK;
+end;
+//------------------------------------------------------------------------------
+function TAddInObject.meth_UpdActive(paParams: PSafeArray; var ARet: OleVariant): HResult; stdcall;
+begin
+  fFileMap.WriteTicker();
+  meth_UpdActive := S_OK;
 end;
 //------------------------------------------------------------------------------
 function TAddInObject.meth_Open(paParams: PSafeArray; var ARet:OLEVariant): HResult; stdcall;

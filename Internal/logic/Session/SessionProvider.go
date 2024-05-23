@@ -72,6 +72,7 @@ func (sm *SessionProvider) Run() {
 		lSession.AppMan.CommandLine = AppCmd
 		lSession.AppMan.CloseCmd = lApp.CloseCmd
 		lSession.AppMan.TimeoutWork = lApp.WorkTimeout
+
 		if lApp.OpenMode == 1 {
 			lSession.AppMan.Send("ee 0")
 		}
@@ -127,6 +128,11 @@ func (sm *SessionProvider) Add(AName string) *Session {
 	if sm.OnAdd != nil {
 		sm.OnAdd(&lSession)
 	}
+
+	lSession.AppMan.OnTiker = func() {
+		lSession.TimeApp = time.Now()
+	}
+
 	return &lSession
 }
 

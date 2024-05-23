@@ -144,6 +144,7 @@ begin
   Obj.AddMeth('Open'            , 'Открыть'               , 2, false);
   Obj.AddMeth('Quit'            , 'Выход'                 , 0, false);
   Obj.AddProp('IsOpen'          , 'Открыт'                , true, false);
+  Obj.AddMeth('UpdActive'       , 'ОбнАктивность'         , 0, false);
 
   Obj.AddMeth('Result_EC'       , 'РезультатВК'           , 2, false);
   // Клиент телнет

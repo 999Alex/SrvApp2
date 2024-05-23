@@ -12,6 +12,7 @@ tPack=record
 end;
 
 tfPack=record
+  Ticker:array[0..3] of byte;
   Cmd:array[0..10] of char;
   Reply:string[3];
   //Len:String[8];
@@ -34,10 +35,12 @@ tFileMap=class
     fList:TThreadList;
     procedure fLog(AMsg:string);
   public
+    Ticker:dword;
     TimeOut:integer;  // in sec
     OnLog:TOnLog;
     OnData:TOnLog;
     function Open(AName:string):integer;
+    function WriteTicker():integer;
     function Write(ACmd, AReply, AData:string):integer;
     function Read(var APack:tPack):integer;
     function Init(ATimeOut:integer):integer;
@@ -90,6 +93,32 @@ begin
   //fList.UnlockList;
 end;
 //------------------------------------------------------------------------------
+function tFileMap.WriteTicker;
+var
+  lPack:^tfPack;
+  lPointer:Pointer;
+  i,c:dword;
+  lList:TList;
+begin
+  Result:=0;
+  try
+
+    lPointer:=lpBaseAddr;
+    lPack:=lPointer;
+    lPack.Reply:='';
+
+    inc(Ticker);
+
+    lPack.Ticker[0]:=LoByte(LoWord(Ticker));
+    lPack.Ticker[1]:=HiByte(LoWord(Ticker));
+    lPack.Ticker[2]:=LoByte(HiWord(Ticker));
+    lPack.Ticker[3]:=HiByte(HiWord(Ticker));
+
+  except
+    Result:=-1;
+  end;
+end;
+//------------------------------------------------------------------------------
 function tFileMap.Write;
 var
   lPack:^tfPack;
@@ -105,12 +134,19 @@ begin
     lPack:=lPointer;
     lPack.Reply:='';
     //lPack.Data:=PChar(AData+#0);
+
+    lPack.Ticker[0]:=LoByte(LoWord(Ticker));
+    lPack.Ticker[1]:=HiByte(LoWord(Ticker));
+    lPack.Ticker[2]:=LoByte(HiWord(Ticker));
+    lPack.Ticker[3]:=HiByte(HiWord(Ticker));
+
     c:=Length(AData);
     if c>0 then for i:=0 to c-1 do lPack.Data[i]:=AData[i+1];
     lPack.Len[0]:=LoByte(LoWord(c));
     lPack.Len[1]:=HiByte(LoWord(c));
     lPack.Len[2]:=LoByte(HiWord(c));
     lPack.Len[3]:=HiByte(HiWord(c));
+
     //lPack.Len:=IntToHex(c, 8);
     lPack.Reply:=AReply;
     for i:=0 to 10 do lPack.Cmd[i]:=ACmd[i+1];
@@ -169,11 +205,24 @@ end;
 //------------------------------------------------------------------------------
 function tFileMap.WaitFor;
 var
-//  lDT:TDateTime;
+  lDT:TDateTime;
   lTO:integer;
   lPack:^tfPack;
 begin
   Result:=-1;
+  if ATimeOut=0 then lTO:=TimeOut else lTO:=ATimeOut;
+  lDT:=Now+lTO/24/60/60;
+  repeat
+    //if Terminated then break;
+    if CheckFor(ACmd, APack)=0 then begin
+      Result:=0;
+      exit;
+    end;
+    sleep(1);
+    //mainApplication.ProcessMessages;
+  until Now>lDT;
+
+{  Result:=-1;
   if ATimeOut=0 then lTO:=TimeOut else lTO:=ATimeOut;
   lTO:=lTO*1000;
   while lTO>0 do begin
@@ -185,7 +234,7 @@ begin
     end;
     sleep(1);
     dec(lTO);
-  end;
+  end;}
 end;
 //------------------------------------------------------------------------------
 function tFileMap.CheckFor;

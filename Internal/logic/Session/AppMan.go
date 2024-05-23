@@ -16,6 +16,7 @@ type AppMan struct {
 	FM          *FileMap
 	TimeoutWork uint
 	Token       string
+	OnTiker     func()
 }
 
 func NewManApp(t string) *AppMan {
@@ -30,6 +31,7 @@ func (am *AppMan) Start() error {
 	lFileID := fmt.Sprintf("ManagerApp" + am.Token)
 
 	lFM := NewFileMap()
+
 	err := lFM.Open(lFileID)
 	if err != nil {
 		return err
@@ -40,6 +42,13 @@ func (am *AppMan) Start() error {
 	}
 
 	am.FM = lFM
+	am.FM.OnTiker = func() {
+		if am.OnTiker != nil {
+			am.OnTiker()
+		}
+	}
+
+	go lFM.Listen()
 
 	lFM.Write("INIT", "", "")
 	PI := winapi.StartApplication(am.CommandLine + " /ID" + am.Token)
