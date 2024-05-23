@@ -151,6 +151,9 @@ func CheckTimeouts(sm *SessionProvider) {
 			}
 
 			lTO := time.Second * time.Duration(s.TimeoutWork)
+			if time.Since(s.TimeApp) <= lTO {
+				continue
+			}
 			if time.Since(s.TimeNet) > lTO {
 				s.Close()
 				//s.Quit()
