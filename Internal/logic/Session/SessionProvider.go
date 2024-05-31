@@ -26,7 +26,7 @@ type Session struct {
 	Token       string           // Идентификатор сессии HTTP
 	Name        string           // Имя сессии - вид, ИП адрес
 	SharedId    int              // Идентификатор общей сессии - индекс базы
-	SessionLock *Session         // Сессия, захватившая дпнную сессию - для общих сессий
+	SessionLock *Session         // Сессия, захватившая данную сессию - для общих сессий
 	Log         string
 
 	Conn   net.Conn // Сетевое подключение
